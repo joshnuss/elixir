@@ -199,10 +199,16 @@ defmodule Module.Types.Pattern do
   end
 
   defp of_pairs(pairs, stack, context) do
-    map_reduce_ok(pairs, context, fn {key, value}, context ->
-      with {:ok, key_type, context} <- of_pattern(key, stack, context),
-           {:ok, value_type, context} <- of_pattern(value, stack, context),
-           do: {:ok, {key_type, value_type}, context}
+    map_reduce_ok(pairs, context, fn
+      {key, value}, context ->
+        with {:ok, key_type, context} <- of_pattern(key, stack, context),
+             {:ok, value_type, context} <- of_pattern(value, stack, context),
+             do: {:ok, {key_type, value_type}, context}
+
+      {key, meta, nil}, context ->
+        with {:ok, key_type, context} <- of_pattern(key, stack, context),
+             {:ok, value_type, context} <- of_pattern({key, meta, nil}, stack, context),
+             do: {:ok, {key_type, value_type}, context}
     end)
   end
 

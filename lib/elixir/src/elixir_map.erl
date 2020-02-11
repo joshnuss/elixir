@@ -115,6 +115,9 @@ validate_kv(Meta, KV, Original, #{context := Context} = E) ->
       (Context == match) andalso validate_match_key(Meta, K, E),
       NewUsed = validate_not_repeated(Meta, K, Used, E),
       {Index + 1, NewUsed};
+    ({K, _, _}, {Index, Used}) ->
+      NewUsed = validate_not_repeated(Meta, K, Used, E),
+      {Index + 1, NewUsed};
     (_, {Index, _Used}) ->
       form_error(Meta, E, ?MODULE, {not_kv_pair, lists:nth(Index, Original)})
   end, {1, #{}}, KV).
